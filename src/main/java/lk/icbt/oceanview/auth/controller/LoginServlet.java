@@ -33,11 +33,14 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
 
+            // after successful authentication
             HttpSession session = req.getSession(true);
             session.setAttribute("authUser", user);
 
-            session.setAttribute("flashSuccess", "Login successful.");
-            resp.sendRedirect(req.getContextPath() + "/dashboard");
+            // Show success on login page, then redirect via JS
+            req.setAttribute("success", "Login successful. Redirecting to dashboard...");
+            req.setAttribute("redirectUrl", req.getContextPath() + "/dashboard");
+            req.getRequestDispatcher("/WEB-INF/views/auth/login.jsp").forward(req, resp);
 
         } catch (SQLException e) {
             req.setAttribute("error", "System error. Please try again.");
