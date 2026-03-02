@@ -162,15 +162,17 @@
         </div>
 
         <nav class="nav">
-            <a href="<%= request.getContextPath() %>/dashboard">Home</a>
-            <a href="#">Make Reservation</a>
-            <a href="#">View Reservations</a>
-            <a href="#">Generate Bill</a>
-            <a href="#">Help</a>
+            <a href="<%= request.getContextPath() %>/dashboard?page=home">Home</a>
+            <a href="<%= request.getContextPath() %>/dashboard?page=reservationForm">Make Reservation</a>
+            <a href="<%= request.getContextPath() %>/dashboard?page=reservationList">View Reservations</a>
+            <a href="<%= request.getContextPath() %>/dashboard?page=billing">Generate Bill</a>
+            <a href="<%= request.getContextPath() %>/dashboard?page=help">Help</a>
 
-            <!-- Logout confirmation -->
-            <a class="danger" href="<%= request.getContextPath() %>/logout"
-               onclick="return confirm('Are you sure you want to log out?');">Logout</a>
+            <a class="danger"
+               href="<%= request.getContextPath() %>/logout"
+               onclick="return confirm('Are you sure you want to log out?');">
+                Logout
+            </a>
         </nav>
     </aside>
 
@@ -182,27 +184,47 @@
             </div>
         </div>
 
+
+        <%
+            String currentPage = (String) request.getAttribute("page");
+            if (currentPage == null || currentPage.isBlank()) {
+                currentPage = "home";
+            }
+        %>
+
         <div class="card">
-            <h3 style="margin:0 0 10px;">Home</h3>
-            <p style="margin:0; color: var(--muted); font-size: 14px; line-height: 1.55;">
-                This is the main dashboard area. In the next steps, content will load dynamically when you click sidebar
-                navigation items (Reservation, Billing, Help).
+
+            <% switch (currentPage) {
+                case "home" -> { %>
+            <h3>Home</h3>
+            <p style="color: var(--muted);">
+                Welcome to the Ocean View Resort Reservation System.
+                Use the sidebar to manage reservations and billing.
             </p>
 
-            <div class="grid">
-                <div class="kpi">
-                    <div class="label">Today’s Reservations</div>
-                    <div class="value">—</div>
-                </div>
-                <div class="kpi">
-                    <div class="label">Pending Bills</div>
-                    <div class="value">—</div>
-                </div>
-                <div class="kpi">
-                    <div class="label">Occupancy Rate</div>
-                    <div class="value">—</div>
-                </div>
-            </div>
+            <%
+                } case "reservationForm" -> { %>
+            <jsp:include page="/WEB-INF/views/reservation/reservation-form.jsp"/>
+
+            <%
+                } case "reservationList" -> { %>
+            <jsp:include page="/WEB-INF/views/reservation/reservation-list.jsp"/>
+
+            <%
+                } case "billing" -> { %>
+            <jsp:include page="/WEB-INF/views/billing/billing.jsp"/>
+
+            <%
+                } case "help" -> { %>
+            <jsp:include page="/WEB-INF/views/help/help.jsp"/>
+
+            <%
+                } default -> { %>
+            <h3>Page Not Found</h3>
+            <%
+                    }
+                } %>
+
         </div>
     </main>
 </div>

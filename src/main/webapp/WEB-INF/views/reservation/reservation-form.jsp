@@ -8,9 +8,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title></title>
 </head>
 <body>
-
+    <h3>Make Reservation</h3>
+    <p style="color: var(--muted);">
+        Reservation form will be implemented in the next phase.
+    </p>
 </body>
 </html>
