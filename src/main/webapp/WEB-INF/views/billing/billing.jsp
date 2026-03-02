@@ -11,6 +11,9 @@
     <title>Title</title>
 </head>
 <body>
-
+<h3>Generate Bill</h3>
+<p style="color: var(--muted);">
+    Billing calculation module will be implemented next.
+</p>
 </body>
 </html>
