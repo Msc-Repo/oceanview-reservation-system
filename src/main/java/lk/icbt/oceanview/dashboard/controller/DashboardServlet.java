@@ -10,17 +10,18 @@ import java.io.IOException;
 public class DashboardServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
-        HttpSession session = req.getSession(false);
-        if (session != null) {
-            String flash = (String) session.getAttribute("flashSuccess");
-            if (flash != null) {
-                req.setAttribute("flashSuccess", flash);
-                session.removeAttribute("flashSuccess");
-            }
+        String page = req.getParameter("page");
+
+        if (page == null || page.isBlank()) {
+            page = "home";
         }
 
-        req.getRequestDispatcher("/WEB-INF/views/dashboard/dashboard.jsp").forward(req, resp);
+        req.setAttribute("page", page);
+
+        req.getRequestDispatcher("/WEB-INF/views/dashboard/dashboard.jsp")
+                .forward(req, resp);
     }
 }
