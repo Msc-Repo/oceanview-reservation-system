@@ -13,12 +13,38 @@
 
 <%
     String flashSuccess = (String) request.getAttribute("flashSuccess");
-    if (flashSuccess != null) {
+    String flashError = (String) request.getAttribute("flashError");
 %>
-<div style="margin:10px 0; padding:10px 12px; border-radius:12px; border:1px solid rgba(22,163,74,0.22); background: rgba(22,163,74,0.10); color:#166534;">
+
+<% if (flashSuccess != null) { %>
+<div id="flashMsgSuccess"
+     style="margin:10px 0; padding:10px 12px; border-radius:12px; border:1px solid rgba(22,163,74,0.22); background: rgba(22,163,74,0.10); color:#166534;">
     <%= flashSuccess %>
 </div>
 <% } %>
+
+<% if (flashError != null) { %>
+<div id="flashMsgError"
+     style="margin:10px 0; padding:10px 12px; border-radius:12px; border:1px solid rgba(220,38,38,0.22); background: rgba(220,38,38,0.08); color:#991b1b;">
+    <%= flashError %>
+</div>
+<% } %>
+
+<script>
+    (function () {
+        const successEl = document.getElementById('flashMsgSuccess');
+        const errorEl = document.getElementById('flashMsgError');
+
+        const hideAfterMs = 3000; // 3 seconds (change if you want)
+
+        if (successEl) {
+            setTimeout(() => { successEl.style.display = 'none'; }, hideAfterMs);
+        }
+        if (errorEl) {
+            setTimeout(() => { errorEl.style.display = 'none'; }, hideAfterMs);
+        }
+    })();
+</script>
 
 <%
     List<Reservation> reservations = (List<Reservation>) request.getAttribute("reservations");
