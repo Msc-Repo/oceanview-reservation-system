@@ -99,29 +99,53 @@ public class DashboardServlet extends HttpServlet {
         if ("reservationEdit".equals(page)) {
             try {
                 int id = Integer.parseInt(req.getParameter("id"));
+
+                var reservationDAO = new lk.icbt.oceanview.reservation.dao.ReservationDAO();
+                var roomTypeDAO = new lk.icbt.oceanview.reservation.dao.RoomTypeDAO();
+                var roomDAO = new lk.icbt.oceanview.reservation.dao.RoomDAO();
+
                 var res = reservationDAO.findByIdWithDetails(id);
+
                 if (res == null) {
                     req.setAttribute("pageError", "Reservation not found.");
                 } else {
-                    // load room types
+                    // Use NEW values (if user is reloading) OR fallback to DB values
+                    String typeIdStr = req.getParameter("typeId");
+                    String checkInStr = req.getParameter("checkIn");
+                    String checkOutStr = req.getParameter("checkOut");
+
+                    int selectedTypeId = (typeIdStr == null || typeIdStr.isBlank())
+                            ? res.getRoomTypeId()
+                            : Integer.parseInt(typeIdStr);
+
+                    java.time.LocalDate selectedCheckIn = (checkInStr == null || checkInStr.isBlank())
+                            ? res.getCheckIn()
+                            : java.time.LocalDate.parse(checkInStr);
+
+                    java.time.LocalDate selectedCheckOut = (checkOutStr == null || checkOutStr.isBlank())
+                            ? res.getCheckOut()
+                            : java.time.LocalDate.parse(checkOutStr);
+
+                    // push selected values back to JSP so it doesn't reset
                     req.setAttribute("reservation", res);
-                    req.setAttribute("roomTypes", new lk.icbt.oceanview.reservation.dao.RoomTypeDAO().findAll());
+                    req.setAttribute("roomTypes", roomTypeDAO.findAll());
+                    req.setAttribute("selectedTypeId", selectedTypeId);
+                    req.setAttribute("checkIn", selectedCheckIn.toString());
+                    req.setAttribute("checkOut", selectedCheckOut.toString());
 
-                    lk.icbt.oceanview.reservation.dao.RoomDAO roomDAO = new lk.icbt.oceanview.reservation.dao.RoomDAO();
-
+                    // reload rooms based on selected type/dates
                     req.setAttribute("availableRooms",
                             roomDAO.findAvailableRoomsForEdit(
-                                    res.getRoomTypeId(),
-                                    res.getCheckIn(),
-                                    res.getCheckOut(),
+                                    selectedTypeId,
+                                    selectedCheckIn,
+                                    selectedCheckOut,
                                     res.getId(),
                                     res.getRoomId()
-                            )
-                    );
-
+                            ));
                 }
+
             } catch (Exception e) {
-                req.setAttribute("pageError", "Unable to load reservation.");
+                req.setAttribute("pageError", "Unable to load reservation edit details.");
             }
         }
 
