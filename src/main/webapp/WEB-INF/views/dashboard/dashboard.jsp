@@ -195,6 +195,7 @@
         <div class="card">
 
             <% switch (currentPage) {
+
                 case "home" -> { %>
             <h3>Home</h3>
             <p style="color: var(--muted);">
@@ -202,28 +203,26 @@
                 Use the sidebar to manage reservations and billing.
             </p>
 
-            <%
-                } case "reservationForm" -> { %>
+            <%  } case "reservationForm" -> { %>
             <jsp:include page="/WEB-INF/views/reservation/reservation-form.jsp"/>
 
-            <%
-                } case "reservationList" -> { %>
+            <%  } case "reservationList" -> { %>
             <jsp:include page="/WEB-INF/views/reservation/reservation-list.jsp"/>
 
-            <%
-                } case "billing" -> { %>
+            <%  } case "reservationEdit" -> { %>
+            <jsp:include page="/WEB-INF/views/reservation/reservation-edit.jsp"/>
+
+            <%  } case "billing" -> { %>
             <jsp:include page="/WEB-INF/views/billing/billing.jsp"/>
 
-            <%
-                } case "help" -> { %>
+            <%  } case "help" -> { %>
             <jsp:include page="/WEB-INF/views/help/help.jsp"/>
 
-            <%
-                } default -> { %>
+            <%  } default -> { %>
             <h3>Page Not Found</h3>
-            <%
-                    }
-                } %>
+
+            <%  }
+            } %>
 
         </div>
     </main>
