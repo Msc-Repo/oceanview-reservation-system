@@ -5,13 +5,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import lk.icbt.oceanview.reservation.dao.ReservationDAO;
+import lk.icbt.oceanview.reservation.dao.RoomTypeDAO;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 @WebServlet("/dashboard")
 public class DashboardServlet extends HttpServlet {
 
     private final ReservationDAO reservationDAO = new ReservationDAO();
+    private final RoomTypeDAO roomTypeDAO = new RoomTypeDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -23,14 +26,44 @@ public class DashboardServlet extends HttpServlet {
             page = "home";
         }
 
-        /*
-        SPECIAL ROUTE:
-        If user clicks "Add Reservation", we forward to ReservationFormServlet.
-        That servlet loads room types + available rooms from DB.
-        */
         if ("reservationForm".equals(page)) {
-            req.getRequestDispatcher("/reservations/form").forward(req, resp);
-            return;
+            try {
+                req.setAttribute("roomTypes", roomTypeDAO.findAll());
+
+                // Defaults
+                String checkInStr = req.getParameter("checkIn");
+                String checkOutStr = req.getParameter("checkOut");
+                String typeIdStr = req.getParameter("typeId");
+
+                LocalDate checkIn = (checkInStr == null || checkInStr.isBlank())
+                        ? LocalDate.now()
+                        : LocalDate.parse(checkInStr);
+
+                LocalDate checkOut = (checkOutStr == null || checkOutStr.isBlank())
+                        ? LocalDate.now().plusDays(1)
+                        : LocalDate.parse(checkOutStr);
+
+                req.setAttribute("checkIn", checkIn.toString());
+                req.setAttribute("checkOut", checkOut.toString());
+
+                int selectedTypeId = (typeIdStr == null || typeIdStr.isBlank())
+                        ? 0
+                        : Integer.parseInt(typeIdStr);
+
+                req.setAttribute("selectedTypeId", selectedTypeId);
+
+                // Load rooms only if a type is selected
+                if (selectedTypeId > 0) {
+                    lk.icbt.oceanview.reservation.dao.RoomDAO roomDAO =
+                            new lk.icbt.oceanview.reservation.dao.RoomDAO();
+
+                    req.setAttribute("availableRooms",
+                            roomDAO.findAvailableRooms(selectedTypeId, checkIn, checkOut));
+                }
+
+            } catch (Exception e) {
+                req.setAttribute("pageError", "Unable to load room data.");
+            }
         }
 
         /*

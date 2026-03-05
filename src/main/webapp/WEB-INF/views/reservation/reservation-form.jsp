@@ -2,6 +2,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="lk.icbt.oceanview.reservation.model.RoomType" %>
 <%@ page import="lk.icbt.oceanview.reservation.model.Room" %>
+<%@ page import="java.time.LocalDate" %>
 
 <h3>Make Reservation</h3>
 
@@ -27,13 +28,22 @@
 
     String checkIn = (String) request.getAttribute("checkIn");
     String checkOut = (String) request.getAttribute("checkOut");
+
+    if (checkIn == null || checkIn.isBlank() || "null".equalsIgnoreCase(checkIn)) {
+        checkIn = LocalDate.now().toString(); // yyyy-MM-dd
+    }
+    if (checkOut == null || checkOut.isBlank() || "null".equalsIgnoreCase(checkOut)) {
+        checkOut = LocalDate.now().plusDays(1).toString(); // yyyy-MM-dd
+    }
     Integer selectedTypeId = (Integer) request.getAttribute("selectedTypeId");
     if (selectedTypeId == null) selectedTypeId = 0;
 %>
 
 <!-- Step 1: Choose type + dates (reloads available rooms by hitting /reservations/form) -->
-<form method="get" action="<%= request.getContextPath() %>/reservations/form"
+<form method="get" action="<%= request.getContextPath() %>/dashboard"
       style="display:grid; gap:12px; max-width: 820px;">
+
+    <input type="hidden" name="page" value="reservationForm"/>
 
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
         <div>
