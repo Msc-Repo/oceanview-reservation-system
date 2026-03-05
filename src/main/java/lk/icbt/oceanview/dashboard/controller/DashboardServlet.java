@@ -96,6 +96,35 @@ public class DashboardServlet extends HttpServlet {
             }
         }
 
+        if ("reservationEdit".equals(page)) {
+            try {
+                int id = Integer.parseInt(req.getParameter("id"));
+                var res = reservationDAO.findByIdWithDetails(id);
+                if (res == null) {
+                    req.setAttribute("pageError", "Reservation not found.");
+                } else {
+                    // load room types
+                    req.setAttribute("reservation", res);
+                    req.setAttribute("roomTypes", new lk.icbt.oceanview.reservation.dao.RoomTypeDAO().findAll());
+
+                    lk.icbt.oceanview.reservation.dao.RoomDAO roomDAO = new lk.icbt.oceanview.reservation.dao.RoomDAO();
+
+                    req.setAttribute("availableRooms",
+                            roomDAO.findAvailableRoomsForEdit(
+                                    res.getRoomTypeId(),
+                                    res.getCheckIn(),
+                                    res.getCheckOut(),
+                                    res.getId(),
+                                    res.getRoomId()
+                            )
+                    );
+
+                }
+            } catch (Exception e) {
+                req.setAttribute("pageError", "Unable to load reservation.");
+            }
+        }
+
         /*
         Pass page variable to dashboard layout
         so dashboard.jsp loads the correct module

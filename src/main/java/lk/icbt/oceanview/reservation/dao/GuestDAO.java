@@ -44,4 +44,16 @@ public class GuestDAO {
         }
         return 0;
     }
+
+    public void update(Guest g) throws SQLException {
+        String sql = "UPDATE guests SET full_name = ?, phone = ?, email = ? WHERE id = ?";
+        Connection conn = DBConnection.getInstance().getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, g.getFullName());
+            ps.setString(2, g.getPhone());
+            ps.setString(3, g.getEmail());
+            ps.setInt(4, g.getId());
+            ps.executeUpdate();
+        }
+    }
 }

@@ -15,6 +15,7 @@ public class Reservation {
     private String guestName;
     private String roomNumber;
     private String roomTypeName;
+    private int roomTypeId;
 
     public Reservation() {}
 
@@ -47,4 +48,7 @@ public class Reservation {
 
     public String getRoomTypeName() { return roomTypeName; }
     public void setRoomTypeName(String roomTypeName) { this.roomTypeName = roomTypeName; }
+
+    public int getRoomTypeId() { return roomTypeId; }
+    public void setRoomTypeId(int roomTypeId) { this.roomTypeId = roomTypeId; }
 }
