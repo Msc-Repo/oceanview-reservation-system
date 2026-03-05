@@ -22,6 +22,21 @@ public class DashboardServlet extends HttpServlet {
 
         String page = req.getParameter("page");
 
+        HttpSession session = req.getSession(false);
+        if (session != null) {
+            String flashSuccess = (String) session.getAttribute("flashSuccess");
+            String flashError = (String) session.getAttribute("flashError");
+
+            if (flashSuccess != null) {
+                req.setAttribute("flashSuccess", flashSuccess);
+                session.removeAttribute("flashSuccess");
+            }
+            if (flashError != null) {
+                req.setAttribute("flashError", flashError);
+                session.removeAttribute("flashError");
+            }
+        }
+
         if (page == null || page.isBlank()) {
             page = "home";
         }

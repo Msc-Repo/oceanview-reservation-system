@@ -4,6 +4,60 @@
 <%@ page import="lk.icbt.oceanview.reservation.model.Room" %>
 <%@ page import="java.time.LocalDate" %>
 
+
+<%
+    String flashSuccess = (String) request.getAttribute("flashSuccess");
+    String flashError = (String) request.getAttribute("flashError");
+    String formError = (String) request.getAttribute("formError");
+%>
+
+<div id="flash-area" style="display:grid; gap:10px;">
+    <% if (flashSuccess != null) { %>
+    <div class="flash-msg flash-success"
+         style="padding:10px 12px; border-radius:12px; border:1px solid rgba(22,163,74,0.22); background: rgba(22,163,74,0.10); color:#166534;">
+        <%= flashSuccess %>
+    </div>
+    <% } %>
+
+    <% if (flashError != null) { %>
+    <div class="flash-msg flash-error"
+         style="padding:10px 12px; border-radius:12px; border:1px solid rgba(220,38,38,0.22); background: rgba(220,38,38,0.08); color:#991b1b;">
+        <%= flashError %>
+    </div>
+    <% } %>
+
+    <% if (formError != null) { %>
+    <div class="flash-msg flash-error"
+         style="padding:10px 12px; border-radius:12px; border:1px solid rgba(220,38,38,0.22); background: rgba(220,38,38,0.08); color:#991b1b;">
+        <%= formError %>
+    </div>
+    <% } %>
+</div>
+
+
+<script>
+    (function () {
+        const flashArea = document.getElementById("flash-area");
+        if (!flashArea) return;
+
+        const msgs = flashArea.querySelectorAll(".flash-msg");
+        if (!msgs.length) return;
+
+        // Show for 3.5 seconds, then fade and remove
+        setTimeout(() => {
+            msgs.forEach(m => {
+                m.style.transition = "opacity 500ms ease, transform 500ms ease";
+                m.style.opacity = "0";
+                m.style.transform = "translateY(-6px)";
+            });
+
+            setTimeout(() => {
+                msgs.forEach(m => m.remove());
+            }, 550);
+        }, 3500);
+    })();
+</script>
+
 <h3>Make Reservation</h3>
 
 <div style="display:flex; gap:10px; margin: 10px 0 16px;">
@@ -13,14 +67,6 @@
     </a>
 </div>
 
-<%
-    String formError = (String) request.getAttribute("formError");
-    if (formError != null) {
-%>
-<div style="margin:10px 0; padding:10px 12px; border-radius:12px; border:1px solid rgba(220,38,38,0.22); background: rgba(220,38,38,0.08); color:#991b1b;">
-    <%= formError %>
-</div>
-<% } %>
 
 <%
     List<RoomType> roomTypes = (List<RoomType>) request.getAttribute("roomTypes");

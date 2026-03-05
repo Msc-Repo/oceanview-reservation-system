@@ -35,7 +35,7 @@ public class ReservationCreateServlet extends HttpServlet {
             HttpSession session = req.getSession();
             session.setAttribute("flashSuccess", "Reservation created successfully. ID: " + newId);
 
-            resp.sendRedirect(req.getContextPath() + "/dashboard?page=reservationList");
+            resp.sendRedirect(req.getContextPath() + "/dashboard?page=reservationForm");
 
         } catch (IllegalArgumentException ex) {
             req.setAttribute("formError", ex.getMessage());
