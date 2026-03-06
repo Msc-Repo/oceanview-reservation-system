@@ -41,6 +41,26 @@ public class DashboardServlet extends HttpServlet {
             page = "home";
         }
 
+        if ("home".equals(page)) {
+            try {
+
+                var reportsService = new lk.icbt.oceanview.reports.service.ReportsService();
+                var revenueReport = reportsService.getRevenueReport();
+
+                var reservationDAO = new lk.icbt.oceanview.reservation.dao.ReservationDAO();
+                var roomDAO = new lk.icbt.oceanview.reservation.dao.RoomDAO();
+
+                req.setAttribute("totalReservations", reservationDAO.countAll());
+                req.setAttribute("paidReservations", reservationDAO.countByStatus("PAID"));
+                req.setAttribute("availableRooms", roomDAO.countAvailableRooms());
+
+                req.setAttribute("totalRevenue", revenueReport.getTotalRevenue());
+
+            } catch (Exception e) {
+                req.setAttribute("pageError", "Unable to load dashboard statistics.");
+            }
+        }
+
         if ("reservationForm".equals(page)) {
             try {
                 req.setAttribute("roomTypes", roomTypeDAO.findAll());
