@@ -72,4 +72,42 @@ public class BillingDAO {
 
         return null;
     }
+
+    public java.util.List<lk.icbt.oceanview.billing.model.Billing> findLatestPaidBills(int limit) throws Exception {
+
+        String sql = """
+            SELECT bill_id, reservation_id, nights, rate_per_night,
+                   service_charge, tax_amount, total_amount,
+                   payment_method, payment_status
+            FROM bills
+            ORDER BY bill_id DESC
+            LIMIT ?
+            """;
+
+        java.util.List<lk.icbt.oceanview.billing.model.Billing> list = new java.util.ArrayList<>();
+
+        java.sql.Connection conn = lk.icbt.oceanview.common.db.DBConnection.getInstance().getConnection();
+
+        try (java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lk.icbt.oceanview.billing.model.Billing b = new lk.icbt.oceanview.billing.model.Billing();
+                    b.setBillId(rs.getInt("bill_id"));
+                    b.setReservationId(rs.getInt("reservation_id"));
+                    b.setNights(rs.getInt("nights"));
+                    b.setRatePerNight(rs.getBigDecimal("rate_per_night"));
+                    b.setServiceCharge(rs.getBigDecimal("service_charge"));
+                    b.setTaxAmount(rs.getBigDecimal("tax_amount"));
+                    b.setTotalAmount(rs.getBigDecimal("total_amount"));
+                    b.setPaymentMethod(rs.getString("payment_method"));
+                    b.setPaymentStatus(rs.getString("payment_status"));
+                    list.add(b);
+                }
+            }
+        }
+
+        return list;
+    }
 }
