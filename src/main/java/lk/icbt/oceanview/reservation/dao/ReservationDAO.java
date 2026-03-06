@@ -114,6 +114,9 @@ public class ReservationDAO {
                 r.setRoomTypeName(rs.getString("type_name"));
                 r.setRoomTypeId(rs.getInt("type_id"));
 
+                r.setRatePerNight(
+                        rs.getBigDecimal("rate_per_night"));
+
                 // extra edit fields via request attributes later:
                 // nic/phone/email/typeId etc stored as request attributes in servlet
                 return r;

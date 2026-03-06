@@ -1,5 +1,6 @@
 package lk.icbt.oceanview.reservation.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class Reservation {
@@ -10,6 +11,7 @@ public class Reservation {
     private LocalDate checkOut;
     private int guestsCount;
     private String status;
+    private BigDecimal ratePerNight;
 
     // Joined display fields (for list UI)
     private String guestName;
@@ -51,4 +53,12 @@ public class Reservation {
 
     public int getRoomTypeId() { return roomTypeId; }
     public void setRoomTypeId(int roomTypeId) { this.roomTypeId = roomTypeId; }
+
+    public BigDecimal getRatePerNight() {
+        return ratePerNight;
+    }
+
+    public void setRatePerNight(BigDecimal ratePerNight) {
+        this.ratePerNight = ratePerNight;
+    }
 }
