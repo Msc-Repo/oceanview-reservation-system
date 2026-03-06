@@ -5,11 +5,124 @@
     Billing bill = (Billing) request.getAttribute("bill");
     String pageError = (String) request.getAttribute("pageError");
     String reservationId = request.getParameter("reservationId");
+    String flashError = (String) request.getAttribute("flashError");
 %>
 
-<div style="max-width: 900px; margin: 0 auto;">
+<style>
+    .bill-page-wrap {
+        max-width: 980px;
+        margin: 0 auto;
+    }
 
-    <h3 style="margin-bottom: 16px;">Billing & Invoice</h3>
+    .bill-search-box, .bill-card {
+        background: white;
+        border: 1px solid rgba(2,6,23,0.10);
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow: 0 10px 24px rgba(2,6,23,0.06);
+    }
+
+    .bill-search-box { margin-bottom: 18px; }
+
+    .invoice-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+        border-bottom: 1px solid rgba(2,6,23,0.08);
+        padding-bottom: 16px;
+        margin-bottom: 18px;
+    }
+
+    .invoice-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-bottom: 20px;
+    }
+
+    .info-box {
+        background: #f8fafc;
+        border: 1px solid rgba(2,6,23,0.06);
+        border-radius: 14px;
+        padding: 14px;
+    }
+
+    .bill-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    .bill-table th, .bill-table td {
+        padding: 12px;
+        border-bottom: 1px solid rgba(2,6,23,0.06);
+        text-align: left;
+    }
+
+    .bill-table thead tr {
+        background: #f8fafc;
+    }
+
+    .bill-actions {
+        display: flex;
+        gap: 12px;
+        align-items: end;
+        flex-wrap: wrap;
+    }
+
+    .btn-main, .btn-light, .btn-pay {
+        height: 44px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 700;
+        padding: 0 18px;
+    }
+
+    .btn-main {
+        border: 0;
+        color: white;
+        background: linear-gradient(135deg,#2563eb,#06b6d4);
+    }
+
+    .btn-pay {
+        border: 0;
+        color: white;
+        background: linear-gradient(135deg,#16a34a,#22c55e);
+    }
+
+    .btn-light {
+        border: 1px solid rgba(2,6,23,0.12);
+        background: white;
+    }
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #printArea, #printArea * {
+            visibility: visible;
+        }
+
+        #printArea {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            box-shadow: none;
+            border: none;
+        }
+
+        .no-print {
+            display: none !important;
+        }
+    }
+</style>
+
+<div class="bill-page-wrap">
+
+    <h3 style="margin-bottom:16px;">Billing & Invoice</h3>
 
     <% if (pageError != null) { %>
     <div style="margin:10px 0; padding:12px; border-radius:12px; border:1px solid rgba(220,38,38,0.22); background:rgba(220,38,38,0.08); color:#991b1b;">
@@ -17,7 +130,13 @@
     </div>
     <% } %>
 
-    <div style="background:white; border:1px solid rgba(2,6,23,0.10); border-radius:16px; padding:18px; margin-bottom:18px;">
+    <% if (flashError != null) { %>
+    <div style="margin:10px 0; padding:12px; border-radius:12px; border:1px solid rgba(220,38,38,0.22); background:rgba(220,38,38,0.08); color:#991b1b;">
+        <%= flashError %>
+    </div>
+    <% } %>
+
+    <div class="bill-search-box no-print">
         <form method="get" action="<%= request.getContextPath() %>/dashboard" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
             <input type="hidden" name="page" value="billing"/>
 
@@ -29,26 +148,23 @@
                        style="width:220px; height:44px; border-radius:12px; padding:10px; border:1px solid rgba(2,6,23,0.14);" required />
             </div>
 
-            <button type="submit"
-                    style="height:44px; border-radius:12px; border:0; cursor:pointer; font-weight:700; color:white; padding:0 18px; background:linear-gradient(135deg,#2563eb,#06b6d4);">
-                Generate Bill
-            </button>
+            <button type="submit" class="btn-main">Generate Bill</button>
 
             <button type="button"
-                    onclick="window.location.href='<%= request.getContextPath() %>/dashboard?page=billing';"
-                    style="height:44px; border-radius:12px; border:1px solid rgba(2,6,23,0.12); cursor:pointer; font-weight:700; padding:0 18px; background:white;">
+                    class="btn-light"
+                    onclick="window.location.href='<%= request.getContextPath() %>/dashboard?page=billing';">
                 Clear
             </button>
         </form>
     </div>
 
     <% if (bill != null) { %>
-    <div id="printArea" style="background:white; border:1px solid rgba(2,6,23,0.10); border-radius:18px; padding:28px; box-shadow:0 10px 24px rgba(2,6,23,0.06);">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:20px; border-bottom:1px solid rgba(2,6,23,0.08); padding-bottom:16px; margin-bottom:18px;">
+    <div id="printArea" class="bill-card">
+        <div class="invoice-header">
             <div>
                 <h2 style="margin:0; font-size:24px; color:#0f172a;">Ocean View Resort</h2>
                 <p style="margin:6px 0 0; color:#475569; font-size:14px;">
-                    Hotel Invoice / Billing Summary
+                    Guest Billing Invoice
                 </p>
             </div>
             <div style="text-align:right;">
@@ -57,36 +173,57 @@
             </div>
         </div>
 
-        <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+        <div class="invoice-grid">
+            <div class="info-box">
+                <div style="font-size:13px; color:#64748b; margin-bottom:8px;">Guest & Stay Information</div>
+                <div style="display:grid; gap:8px; font-size:14px;">
+                    <div><strong>Guest Name:</strong> <%= bill.getGuestName() %></div>
+                    <div><strong>Room Number:</strong> <%= bill.getRoomNumber() %></div>
+                    <div><strong>Room Type:</strong> <%= bill.getRoomTypeName() %></div>
+                    <div><strong>Check-in:</strong> <%= bill.getCheckIn() %></div>
+                    <div><strong>Check-out:</strong> <%= bill.getCheckOut() %></div>
+                    <div><strong>Nights Stayed:</strong> <%= bill.getNights() %></div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div style="font-size:13px; color:#64748b; margin-bottom:8px;">Invoice Summary</div>
+                <div style="display:grid; gap:8px; font-size:14px;">
+                    <div><strong>Status:</strong> UNPAID</div>
+                    <div><strong>Payment Method:</strong> Select below</div>
+                    <div><strong>Generated On:</strong> <%= java.time.LocalDate.now() %></div>
+                </div>
+            </div>
+        </div>
+
+        <table class="bill-table">
             <thead>
-            <tr style="text-align:left; background:#f8fafc;">
-                <th style="padding:12px; border-bottom:1px solid rgba(2,6,23,0.08);">Description</th>
-                <th style="padding:12px; border-bottom:1px solid rgba(2,6,23,0.08);">Value</th>
+            <tr>
+                <th>Description</th>
+                <th>Value</th>
             </tr>
             </thead>
             <tbody>
             <tr>
-                <td style="padding:12px; border-bottom:1px solid rgba(2,6,23,0.06);">Room Charge</td>
-                <td style="padding:12px; border-bottom:1px solid rgba(2,6,23,0.06);">
-                    LKR <%= bill.getRatePerNight().multiply(new java.math.BigDecimal(bill.getNights())) %>
-                </td>
+                <td>Room Charge</td>
+                <td>LKR <%= bill.getSubtotal() %></td>
             </tr>
             <tr>
-                <td style="padding:12px; border-bottom:1px solid rgba(2,6,23,0.06);">Service Charge (10%)</td>
-                <td style="padding:12px; border-bottom:1px solid rgba(2,6,23,0.06);">LKR <%= bill.getServiceCharge() %></td>
+                <td>Service Charge (10%)</td>
+                <td>LKR <%= bill.getServiceCharge() %></td>
             </tr>
             <tr>
-                <td style="padding:12px; border-bottom:1px solid rgba(2,6,23,0.06);">Tax (15%)</td>
-                <td style="padding:12px; border-bottom:1px solid rgba(2,6,23,0.06);">LKR <%= bill.getTaxAmount() %></td>
+                <td>Tax (15%)</td>
+                <td>LKR <%= bill.getTaxAmount() %></td>
             </tr>
             <tr>
-                <td style="padding:14px; font-size:16px; font-weight:800;">TOTAL</td>
-                <td style="padding:14px; font-size:18px; font-weight:800; color:#2563eb;">LKR <%= bill.getTotalAmount() %></td>
+                <td style="font-size:16px; font-weight:800;">TOTAL</td>
+                <td style="font-size:18px; font-weight:800; color:#2563eb;">LKR <%= bill.getTotalAmount() %></td>
             </tr>
             </tbody>
         </table>
 
-        <form method="post" action="<%= request.getContextPath() %>/billing/pay" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+        <form method="post" action="<%= request.getContextPath() %>/billing/pay" class="bill-actions no-print">
             <input type="hidden" name="reservationId" value="<%= bill.getReservationId() %>"/>
 
             <div style="display:flex; flex-direction:column; gap:6px;">
@@ -99,35 +236,16 @@
                 </select>
             </div>
 
-            <button type="submit"
-                    style="height:44px; border-radius:12px; border:0; cursor:pointer; font-weight:700; color:white; padding:0 18px; background:linear-gradient(135deg,#16a34a,#22c55e);">
-                Pay Bill
-            </button>
+            <button type="submit" class="btn-pay">Pay Bill</button>
+
+            <button type="button" class="btn-light" onclick="window.print();">Print Bill</button>
 
             <button type="button"
-                    onclick="printBill()"
-                    style="height:44px; border-radius:12px; border:1px solid rgba(2,6,23,0.12); cursor:pointer; font-weight:700; padding:0 18px; background:white;">
-                Print Bill
-            </button>
-
-            <button type="button"
-                    onclick="window.location.href='<%= request.getContextPath() %>/dashboard?page=billing';"
-                    style="height:44px; border-radius:12px; border:1px solid rgba(2,6,23,0.12); cursor:pointer; font-weight:700; padding:0 18px; background:white;">
+                    class="btn-light"
+                    onclick="window.location.href='<%= request.getContextPath() %>/dashboard?page=billing';">
                 Clear
             </button>
         </form>
     </div>
     <% } %>
 </div>
-
-<script>
-    function printBill() {
-        const printContents = document.getElementById("printArea").innerHTML;
-        const originalContents = document.body.innerHTML;
-
-        document.body.innerHTML = printContents;
-        window.print();
-        document.body.innerHTML = originalContents;
-        window.location.reload();
-    }
-</script>

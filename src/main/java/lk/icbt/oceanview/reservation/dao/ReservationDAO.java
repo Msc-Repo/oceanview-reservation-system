@@ -143,16 +143,12 @@ public class ReservationDAO {
     }
 
     public void updateStatus(int reservationId, String status) throws Exception {
-
-        String sql = "UPDATE reservations SET status=? WHERE reservation_id=?";
+        String sql = "UPDATE reservations SET status = ? WHERE id = ?";
 
         Connection conn = DBConnection.getInstance().getConnection();
-
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, status);
             ps.setInt(2, reservationId);
-
             ps.executeUpdate();
         }
     }

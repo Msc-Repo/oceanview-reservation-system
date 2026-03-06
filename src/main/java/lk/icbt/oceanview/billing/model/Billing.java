@@ -15,6 +15,12 @@ public class Billing {
     private BigDecimal taxAmount;
     private String paymentMethod;
     private String paymentStatus;
+    private String guestName;
+    private String roomNumber;
+    private String roomTypeName;
+    private java.time.LocalDate checkIn;
+    private java.time.LocalDate checkOut;
+    private java.math.BigDecimal subtotal;
 
     public Billing() {}
 
@@ -56,4 +62,22 @@ public class Billing {
 
     public String getPaymentStatus() { return paymentStatus; }
     public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }
+
+    public String getGuestName() { return guestName; }
+    public void setGuestName(String guestName) { this.guestName = guestName; }
+
+    public String getRoomNumber() { return roomNumber; }
+    public void setRoomNumber(String roomNumber) { this.roomNumber = roomNumber; }
+
+    public String getRoomTypeName() { return roomTypeName; }
+    public void setRoomTypeName(String roomTypeName) { this.roomTypeName = roomTypeName; }
+
+    public java.time.LocalDate getCheckIn() { return checkIn; }
+    public void setCheckIn(java.time.LocalDate checkIn) { this.checkIn = checkIn; }
+
+    public java.time.LocalDate getCheckOut() { return checkOut; }
+    public void setCheckOut(java.time.LocalDate checkOut) { this.checkOut = checkOut; }
+
+    public java.math.BigDecimal getSubtotal() { return subtotal; }
+    public void setSubtotal(java.math.BigDecimal subtotal) { this.subtotal = subtotal; }
 }

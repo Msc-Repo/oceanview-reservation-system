@@ -15,45 +15,51 @@ public class BillingService {
 
     public Billing generatePreview(int reservationId) throws Exception {
 
-        Reservation reservation =
-                reservationDAO.findByIdWithDetails(reservationId);
+        Reservation reservation = reservationDAO.findByIdWithDetails(reservationId);
 
-        if (reservation == null)
+        if (reservation == null) {
             throw new IllegalArgumentException("Reservation not found");
+        }
 
-        int nights =
-                (int) ChronoUnit.DAYS.between(
-                        reservation.getCheckIn(),
-                        reservation.getCheckOut());
+        int nights = (int) java.time.temporal.ChronoUnit.DAYS.between(
+                reservation.getCheckIn(),
+                reservation.getCheckOut()
+        );
 
-        BigDecimal rate = reservation.getRatePerNight();
+        if (nights <= 0) {
+            throw new IllegalArgumentException("Invalid stay duration");
+        }
 
-        BigDecimal subtotal =
-                rate.multiply(BigDecimal.valueOf(nights));
-
-        BigDecimal serviceCharge =
-                subtotal.multiply(BigDecimal.valueOf(0.10));
-
-        BigDecimal tax =
-                subtotal.add(serviceCharge)
-                        .multiply(BigDecimal.valueOf(0.15));
-
-        BigDecimal total =
-                subtotal.add(serviceCharge).add(tax);
+        java.math.BigDecimal rate = reservation.getRatePerNight();
+        java.math.BigDecimal subtotal = rate.multiply(java.math.BigDecimal.valueOf(nights));
+        java.math.BigDecimal serviceCharge = subtotal.multiply(java.math.BigDecimal.valueOf(0.10));
+        java.math.BigDecimal taxAmount = subtotal.add(serviceCharge)
+                .multiply(java.math.BigDecimal.valueOf(0.15));
+        java.math.BigDecimal total = subtotal.add(serviceCharge).add(taxAmount);
 
         Billing bill = new Billing();
-
         bill.setReservationId(reservationId);
+        bill.setGuestName(reservation.getGuestName());
+        bill.setRoomNumber(reservation.getRoomNumber());
+        bill.setRoomTypeName(reservation.getRoomTypeName());
+        bill.setCheckIn(reservation.getCheckIn());
+        bill.setCheckOut(reservation.getCheckOut());
         bill.setNights(nights);
         bill.setRatePerNight(rate);
+        bill.setSubtotal(subtotal);
         bill.setServiceCharge(serviceCharge);
-        bill.setTaxAmount(tax);
+        bill.setTaxAmount(taxAmount);
         bill.setTotalAmount(total);
+        bill.setPaymentStatus("UNPAID");
 
         return bill;
     }
 
     public void payBill(int reservationId, String paymentMethod) throws Exception {
+
+        if (paymentMethod == null || paymentMethod.isBlank()) {
+            throw new IllegalArgumentException("Payment method is required.");
+        }
 
         Billing bill = generatePreview(reservationId);
 

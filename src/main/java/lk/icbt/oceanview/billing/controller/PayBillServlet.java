@@ -18,14 +18,16 @@ public class PayBillServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
+        String reservationIdStr = req.getParameter("reservationId");
+
         try {
-            int reservationId = Integer.parseInt(req.getParameter("reservationId"));
+            int reservationId = Integer.parseInt(reservationIdStr);
             String paymentMethod = req.getParameter("paymentMethod");
 
             billingService.payBill(reservationId, paymentMethod);
 
             req.getSession().setAttribute("flashSuccess",
-                    "Bill paid successfully and receipt sent to client.");
+                    "Bill paid successfully. Receipt sent to client.");
 
             resp.sendRedirect(req.getContextPath() + "/dashboard?page=reservationList");
 
@@ -34,7 +36,7 @@ public class PayBillServlet extends HttpServlet {
                     "Payment failed. Please try again.");
 
             resp.sendRedirect(req.getContextPath()
-                    + "/dashboard?page=billing&reservationId=" + req.getParameter("reservationId"));
+                    + "/dashboard?page=billing&reservationId=" + reservationIdStr);
         }
     }
 }
