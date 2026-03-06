@@ -13,7 +13,7 @@ public class BillingService {
     private final BillingDAO billingDAO = new BillingDAO();
     private final ReservationDAO reservationDAO = new ReservationDAO();
 
-    public Billing generateBill(int reservationId) throws Exception {
+    public Billing generatePreview(int reservationId) throws Exception {
 
         Reservation reservation =
                 reservationDAO.findByIdWithDetails(reservationId);
@@ -26,17 +26,46 @@ public class BillingService {
                         reservation.getCheckIn(),
                         reservation.getCheckOut());
 
-        BigDecimal rate =
-                reservation.getRatePerNight();
+        BigDecimal rate = reservation.getRatePerNight();
 
-        BigDecimal total =
+        BigDecimal subtotal =
                 rate.multiply(BigDecimal.valueOf(nights));
 
-        Billing bill =
-                new Billing(reservationId, nights, rate, total);
+        BigDecimal serviceCharge =
+                subtotal.multiply(BigDecimal.valueOf(0.10));
 
-        billingDAO.insert(bill);
+        BigDecimal tax =
+                subtotal.add(serviceCharge)
+                        .multiply(BigDecimal.valueOf(0.15));
+
+        BigDecimal total =
+                subtotal.add(serviceCharge).add(tax);
+
+        Billing bill = new Billing();
+
+        bill.setReservationId(reservationId);
+        bill.setNights(nights);
+        bill.setRatePerNight(rate);
+        bill.setServiceCharge(serviceCharge);
+        bill.setTaxAmount(tax);
+        bill.setTotalAmount(total);
 
         return bill;
     }
+
+    public void payBill(int reservationId, String paymentMethod) throws Exception {
+
+        Billing bill = generatePreview(reservationId);
+
+        bill.setPaymentMethod(paymentMethod);
+        bill.setPaymentStatus("PAID");
+
+        billingDAO.insert(bill);
+
+        reservationDAO.updateStatus(reservationId, "PAID");
+
+        EmailService.sendBillReceipt(bill);
+    }
+
+
 }

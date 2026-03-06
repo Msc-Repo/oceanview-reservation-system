@@ -12,9 +12,12 @@ public class BillingDAO {
     public void insert(Billing bill) throws Exception {
 
         String sql = """
-                INSERT INTO bills (reservation_id, nights, rate_per_night, total_amount)
-                VALUES (?, ?, ?, ?)
-                """;
+            INSERT INTO bills
+            (reservation_id,nights,rate_per_night,
+             service_charge,tax_amount,total_amount,
+             payment_method,payment_status)
+            VALUES (?,?,?,?,?,?,?,?)
+            """;
 
         Connection conn = DBConnection.getInstance().getConnection();
 
@@ -23,7 +26,11 @@ public class BillingDAO {
             ps.setInt(1, bill.getReservationId());
             ps.setInt(2, bill.getNights());
             ps.setBigDecimal(3, bill.getRatePerNight());
-            ps.setBigDecimal(4, bill.getTotalAmount());
+            ps.setBigDecimal(4, bill.getServiceCharge());
+            ps.setBigDecimal(5, bill.getTaxAmount());
+            ps.setBigDecimal(6, bill.getTotalAmount());
+            ps.setString(7, bill.getPaymentMethod());
+            ps.setString(8, bill.getPaymentStatus());
 
             ps.executeUpdate();
         }

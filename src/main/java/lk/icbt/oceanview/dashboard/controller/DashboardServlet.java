@@ -151,18 +151,13 @@ public class DashboardServlet extends HttpServlet {
 
         if ("billing".equals(page)) {
             try {
-
                 String reservationIdStr = req.getParameter("reservationId");
 
-                if (reservationIdStr != null) {
-
+                if (reservationIdStr != null && !reservationIdStr.isBlank()) {
                     int reservationId = Integer.parseInt(reservationIdStr);
 
-                    var billingService =
-                            new lk.icbt.oceanview.billing.service.BillingService();
-
-                    var bill =
-                            billingService.generateBill(reservationId);
+                    var billingService = new lk.icbt.oceanview.billing.service.BillingService();
+                    var bill = billingService.generatePreview(reservationId);
 
                     req.setAttribute("bill", bill);
                 }

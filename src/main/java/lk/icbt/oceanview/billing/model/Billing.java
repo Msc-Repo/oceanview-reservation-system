@@ -11,6 +11,10 @@ public class Billing {
     private BigDecimal ratePerNight;
     private BigDecimal totalAmount;
     private LocalDateTime createdAt;
+    private BigDecimal serviceCharge;
+    private BigDecimal taxAmount;
+    private String paymentMethod;
+    private String paymentStatus;
 
     public Billing() {}
 
@@ -40,4 +44,16 @@ public class Billing {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public BigDecimal getServiceCharge() { return serviceCharge; }
+    public void setServiceCharge(BigDecimal serviceCharge) { this.serviceCharge = serviceCharge; }
+
+    public BigDecimal getTaxAmount() { return taxAmount; }
+    public void setTaxAmount(BigDecimal taxAmount) { this.taxAmount = taxAmount; }
+
+    public String getPaymentMethod() { return paymentMethod; }
+    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+
+    public String getPaymentStatus() { return paymentStatus; }
+    public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }
 }
