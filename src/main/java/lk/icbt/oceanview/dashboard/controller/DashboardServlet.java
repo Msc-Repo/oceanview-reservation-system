@@ -149,6 +149,29 @@ public class DashboardServlet extends HttpServlet {
             }
         }
 
+        if ("billing".equals(page)) {
+            try {
+
+                String reservationIdStr = req.getParameter("reservationId");
+
+                if (reservationIdStr != null) {
+
+                    int reservationId = Integer.parseInt(reservationIdStr);
+
+                    var billingService =
+                            new lk.icbt.oceanview.billing.service.BillingService();
+
+                    var bill =
+                            billingService.generateBill(reservationId);
+
+                    req.setAttribute("bill", bill);
+                }
+
+            } catch (Exception e) {
+                req.setAttribute("pageError", "Unable to generate bill.");
+            }
+        }
+
         /*
         Pass page variable to dashboard layout
         so dashboard.jsp loads the correct module

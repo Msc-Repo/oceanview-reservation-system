@@ -213,7 +213,7 @@
             <jsp:include page="/WEB-INF/views/reservation/reservation-edit.jsp"/>
 
             <%  } case "billing" -> { %>
-            <jsp:include page="/WEB-INF/views/billing/billing.jsp"/>
+            <jsp:include page="/WEB-INF/views/billing/bill-view.jsp"/>
 
             <%  } case "help" -> { %>
             <jsp:include page="/WEB-INF/views/help/help.jsp"/>

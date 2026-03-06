@@ -93,8 +93,9 @@
                 </button>
             </form>
 
-            <a href="<%= request.getContextPath() %>/dashboard?page=billing&reservationId=<%= r.getId() %>"
-               style="text-decoration:none;">Generate Bill</a>
+            <a href="<%= request.getContextPath() %>/dashboard?page=billing&reservationId=<%= r.getId() %>">
+                Generate Bill
+            </a>
         </td>
     </tr>
     <% } } else { %>
