@@ -18,7 +18,24 @@ public class BillingService {
         Reservation reservation = reservationDAO.findByIdWithDetails(reservationId);
 
         if (reservation == null) {
-            throw new IllegalArgumentException("Reservation not found");
+            throw new IllegalArgumentException("No reservation found.");
+        }
+
+        // Check if bill already exists
+        Billing existingBill = billingDAO.findByReservationId(reservationId);
+
+        if (existingBill != null) {
+            existingBill.setGuestName(reservation.getGuestName());
+            existingBill.setRoomNumber(reservation.getRoomNumber());
+            existingBill.setRoomTypeName(reservation.getRoomTypeName());
+            existingBill.setCheckIn(reservation.getCheckIn());
+            existingBill.setCheckOut(reservation.getCheckOut());
+
+            java.math.BigDecimal subtotal =
+                    existingBill.getRatePerNight().multiply(java.math.BigDecimal.valueOf(existingBill.getNights()));
+            existingBill.setSubtotal(subtotal);
+
+            return existingBill;
         }
 
         int nights = (int) java.time.temporal.ChronoUnit.DAYS.between(
@@ -27,7 +44,7 @@ public class BillingService {
         );
 
         if (nights <= 0) {
-            throw new IllegalArgumentException("Invalid stay duration");
+            throw new IllegalArgumentException("Invalid stay duration.");
         }
 
         java.math.BigDecimal rate = reservation.getRatePerNight();
@@ -35,7 +52,7 @@ public class BillingService {
         java.math.BigDecimal serviceCharge = subtotal.multiply(java.math.BigDecimal.valueOf(0.10));
         java.math.BigDecimal taxAmount = subtotal.add(serviceCharge)
                 .multiply(java.math.BigDecimal.valueOf(0.15));
-        java.math.BigDecimal total = subtotal.add(serviceCharge).add(taxAmount);
+        java.math.BigDecimal totalAmount = subtotal.add(serviceCharge).add(taxAmount);
 
         Billing bill = new Billing();
         bill.setReservationId(reservationId);
@@ -49,7 +66,7 @@ public class BillingService {
         bill.setSubtotal(subtotal);
         bill.setServiceCharge(serviceCharge);
         bill.setTaxAmount(taxAmount);
-        bill.setTotalAmount(total);
+        bill.setTotalAmount(totalAmount);
         bill.setPaymentStatus("UNPAID");
 
         return bill;

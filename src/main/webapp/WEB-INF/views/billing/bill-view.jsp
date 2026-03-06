@@ -6,6 +6,8 @@
     String pageError = (String) request.getAttribute("pageError");
     String reservationId = request.getParameter("reservationId");
     String flashError = (String) request.getAttribute("flashError");
+
+    boolean isPaid = bill != null && "PAID".equalsIgnoreCase(bill.getPaymentStatus());
 %>
 
 <style>
@@ -110,8 +112,10 @@
             left: 0;
             top: 0;
             width: 100%;
-            box-shadow: none;
-            border: none;
+            background: white;
+            box-shadow: none !important;
+            border: none !important;
+            padding: 20px;
         }
 
         .no-print {
@@ -189,8 +193,10 @@
             <div class="info-box">
                 <div style="font-size:13px; color:#64748b; margin-bottom:8px;">Invoice Summary</div>
                 <div style="display:grid; gap:8px; font-size:14px;">
-                    <div><strong>Status:</strong> UNPAID</div>
-                    <div><strong>Payment Method:</strong> Select below</div>
+                    <div><strong>Status:</strong> <%= bill.getPaymentStatus() %></div>
+                    <div><strong>Payment Method:</strong>
+                        <%= (bill.getPaymentMethod() != null && !bill.getPaymentMethod().isBlank()) ? bill.getPaymentMethod() : "Select below" %>
+                    </div>
                     <div><strong>Generated On:</strong> <%= java.time.LocalDate.now() %></div>
                 </div>
             </div>
@@ -223,20 +229,24 @@
             </tbody>
         </table>
 
-        <form method="post" action="<%= request.getContextPath() %>/billing/pay" class="bill-actions no-print">
-            <input type="hidden" name="reservationId" value="<%= bill.getReservationId() %>"/>
+        <div class="bill-actions no-print">
+            <% if (!isPaid) { %>
+            <form method="post" action="<%= request.getContextPath() %>/billing/pay" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <input type="hidden" name="reservationId" value="<%= bill.getReservationId() %>"/>
 
-            <div style="display:flex; flex-direction:column; gap:6px;">
-                <label style="font-size:13px; color:#334155;">Payment Method</label>
-                <select name="paymentMethod" required
-                        style="width:220px; height:44px; border-radius:12px; padding:10px; border:1px solid rgba(2,6,23,0.14);">
-                    <option value="">-- Select Payment Method --</option>
-                    <option value="CASH">Cash</option>
-                    <option value="CARD">Card</option>
-                </select>
-            </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <label style="font-size:13px; color:#334155;">Payment Method</label>
+                    <select name="paymentMethod" required
+                            style="width:220px; height:44px; border-radius:12px; padding:10px; border:1px solid rgba(2,6,23,0.14);">
+                        <option value="">-- Select Payment Method --</option>
+                        <option value="CASH">Cash</option>
+                        <option value="CARD">Card</option>
+                    </select>
+                </div>
 
-            <button type="submit" class="btn-pay">Pay Bill</button>
+                <button type="submit" class="btn-pay">Pay Bill</button>
+            </form>
+            <% } %>
 
             <button type="button" class="btn-light" onclick="window.print();">Print Bill</button>
 
@@ -245,7 +255,7 @@
                     onclick="window.location.href='<%= request.getContextPath() %>/dashboard?page=billing';">
                 Clear
             </button>
-        </form>
+        </div>
     </div>
     <% } %>
 </div>
