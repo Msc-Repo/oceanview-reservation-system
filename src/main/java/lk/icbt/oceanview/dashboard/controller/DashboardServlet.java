@@ -86,13 +86,18 @@ public class DashboardServlet extends HttpServlet {
         load reservation list with joined data
         */
         if ("reservationList".equals(page)) {
-
             try {
+                String searchIdStr = req.getParameter("searchReservationId");
+                Integer searchId = (searchIdStr == null || searchIdStr.isBlank())
+                        ? null
+                        : Integer.parseInt(searchIdStr);
+
+                req.setAttribute("searchReservationId", searchIdStr);
                 req.setAttribute("reservations",
-                        reservationDAO.findLatestWithDetails(30));
+                        reservationDAO.findLatestWithDetails(30, searchId));
+
             } catch (Exception e) {
-                req.setAttribute("pageError",
-                        "Unable to load reservations.");
+                req.setAttribute("pageError", "Unable to load reservations.");
             }
         }
 
@@ -146,6 +151,26 @@ public class DashboardServlet extends HttpServlet {
 
             } catch (Exception e) {
                 req.setAttribute("pageError", "Unable to load reservation edit details.");
+            }
+        }
+
+        if ("billing".equals(page)) {
+            try {
+                String reservationIdStr = req.getParameter("reservationId");
+
+                if (reservationIdStr != null && !reservationIdStr.isBlank()) {
+                    int reservationId = Integer.parseInt(reservationIdStr);
+
+                    var billingService = new lk.icbt.oceanview.billing.service.BillingService();
+                    var bill = billingService.generatePreview(reservationId);
+
+                    req.setAttribute("bill", bill);
+                }
+
+            } catch (IllegalArgumentException e) {
+                req.setAttribute("pageError", "Unable to generate bill. No reservation found.");
+            } catch (Exception e) {
+                req.setAttribute("pageError", "Unable to generate bill.");
             }
         }
 

@@ -32,25 +32,35 @@ public class ReservationDAO {
         return 0;
     }
 
-    public List<Reservation> findLatestWithDetails(int limit) throws SQLException {
+    public List<Reservation> findLatestWithDetails(int limit, Integer reservationIdFilter) throws Exception {
+
         String sql = """
-            SELECT res.id, res.check_in, res.check_out, res.guests_count, res.status,
-                   g.full_name AS guest_name,
-                   rm.room_number,
-                   rt.type_name AS room_type
-            FROM reservations res
-            JOIN guests g ON res.guest_id = g.id
-            JOIN rooms rm ON res.room_id = rm.id
-            JOIN room_types rt ON rm.type_id = rt.id
-            ORDER BY res.created_at DESC, res.id DESC
-            LIMIT ?
-        """;
+        SELECT r.id, r.check_in, r.check_out, r.guests_count, r.status,
+               g.full_name AS guest_name,
+               rm.room_number,
+               rt.type_name AS room_type
+        FROM reservations r
+        JOIN guests g ON r.guest_id = g.id
+        JOIN rooms rm ON r.room_id = rm.id
+        JOIN room_types rt ON rm.type_id = rt.id
+        WHERE (? IS NULL OR r.id = ?)
+        ORDER BY r.created_at DESC, r.id DESC
+        LIMIT ?
+    """;
 
         List<Reservation> list = new ArrayList<>();
         Connection conn = DBConnection.getInstance().getConnection();
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, limit);
+            if (reservationIdFilter == null) {
+                ps.setNull(1, java.sql.Types.INTEGER);
+                ps.setNull(2, java.sql.Types.INTEGER);
+            } else {
+                ps.setInt(1, reservationIdFilter);
+                ps.setInt(2, reservationIdFilter);
+            }
+            ps.setInt(3, limit);
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Reservation r = new Reservation();
@@ -59,11 +69,9 @@ public class ReservationDAO {
                     r.setCheckOut(rs.getDate("check_out").toLocalDate());
                     r.setGuestsCount(rs.getInt("guests_count"));
                     r.setStatus(rs.getString("status"));
-
                     r.setGuestName(rs.getString("guest_name"));
                     r.setRoomNumber(rs.getString("room_number"));
                     r.setRoomTypeName(rs.getString("room_type"));
-
                     list.add(r);
                 }
             }
@@ -114,6 +122,9 @@ public class ReservationDAO {
                 r.setRoomTypeName(rs.getString("type_name"));
                 r.setRoomTypeId(rs.getInt("type_id"));
 
+                r.setRatePerNight(
+                        rs.getBigDecimal("rate_per_night"));
+
                 // extra edit fields via request attributes later:
                 // nic/phone/email/typeId etc stored as request attributes in servlet
                 return r;
@@ -135,6 +146,17 @@ public class ReservationDAO {
             ps.setDate(3, Date.valueOf(checkOut));
             ps.setInt(4, guestsCount);
             ps.setInt(5, reservationId);
+            ps.executeUpdate();
+        }
+    }
+
+    public void updateStatus(int reservationId, String status) throws Exception {
+        String sql = "UPDATE reservations SET status = ? WHERE id = ?";
+
+        Connection conn = DBConnection.getInstance().getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, reservationId);
             ps.executeUpdate();
         }
     }
