@@ -166,6 +166,7 @@
             <a href="<%= request.getContextPath() %>/dashboard?page=reservationForm">Make Reservation</a>
             <a href="<%= request.getContextPath() %>/dashboard?page=reservationList">View Reservations</a>
             <a href="<%= request.getContextPath() %>/dashboard?page=billing">Generate Bill</a>
+            <a href="<%= request.getContextPath() %>/dashboard?page=reports">Reports</a>
             <a href="<%= request.getContextPath() %>/dashboard?page=help">Help</a>
 
             <a class="danger"
@@ -214,6 +215,9 @@
 
             <%  } case "billing" -> { %>
             <jsp:include page="/WEB-INF/views/billing/bill-view.jsp"/>
+
+            <% }case "reports" -> { %>
+            <jsp:include page="/WEB-INF/views/reports/reports.jsp"/>
 
             <%  } case "help" -> { %>
             <jsp:include page="/WEB-INF/views/help/help.jsp"/>
