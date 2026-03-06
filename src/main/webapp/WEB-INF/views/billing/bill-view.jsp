@@ -98,38 +98,6 @@
         background: white;
     }
 
-    @media print {
-        html, body {
-            background: white !important;
-            margin: 0;
-            padding: 0;
-        }
-
-        body * {
-            visibility: hidden;
-        }
-
-        #printArea, #printArea * {
-            visibility: visible;
-        }
-
-        #printArea {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            background: white !important;
-            border: none !important;
-            box-shadow: none !important;
-            padding: 20px !important;
-            margin: 0 !important;
-        }
-
-        .no-print {
-            display: none !important;
-        }
-    }
-
 </style>
 
 <div class="bill-page-wrap">
@@ -259,7 +227,7 @@
             </form>
             <% } %>
 
-            <button type="button" class="btn-light" onclick="window.print();">Print Bill</button>
+            <button type="button" class="btn-light" onclick="printBillOnly();">Print Bill</button>
 
             <button type="button"
                     class="btn-light"
@@ -270,3 +238,53 @@
     </div>
     <% } %>
 </div>
+
+<script>
+    function printBillOnly() {
+        const printContents = document.getElementById("printArea");
+
+        if (!printContents) {
+            alert("Nothing to print.");
+            return;
+        }
+
+        const printWindow = window.open("", "_blank", "width=900,height=700");
+
+        let html = "";
+        html += "<html lang=";">";
+        html += "<head>";
+        html += "<title>Ocean View Resort - Bill</title>";
+        html += "<style>";
+        html += "body{font-family:Arial,sans-serif;margin:0;padding:24px;color:#0f172a;background:#ffffff;}";
+        html += ".bill-card{width:100%;max-width:900px;margin:0 auto;border:1px solid #dbe2ea;border-radius:14px;padding:24px;box-sizing:border-box;}";
+        html += ".invoice-header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:1px solid #e5e7eb;padding-bottom:16px;margin-bottom:18px;}";
+        html += ".invoice-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;}";
+        html += ".info-box{background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:14px;}";
+        html += ".bill-table{width:100%;border-collapse:collapse;margin-bottom:20px;}";
+        html += ".bill-table th,.bill-table td{padding:12px;border-bottom:1px solid #e5e7eb;text-align:left;}";
+        html += ".bill-table thead tr{background:#f8fafc;}";
+        html += ".no-print{display:none !important;}";
+        html += "@media print{";
+        html += "html,body{margin:0;padding:0;background:white;}";
+        html += ".bill-card{border:none;box-shadow:none;margin:0;padding:0;max-width:100%;}";
+        html += "@page{size:A4;margin:12mm;}";
+        html += "}";
+        html += "</style>";
+        html += "</head>";
+        html += "<body>";
+        html += printContents.outerHTML;
+        html += "</body>";
+        html += "</html>";
+
+        printWindow.document.open();
+        printWindow.document.write(html);
+        printWindow.document.close();
+
+        printWindow.focus();
+
+        setTimeout(function () {
+            printWindow.print();
+            printWindow.close();
+        }, 500);
+    }
+</script>
