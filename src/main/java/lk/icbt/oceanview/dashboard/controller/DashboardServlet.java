@@ -174,6 +174,20 @@ public class DashboardServlet extends HttpServlet {
             }
         }
 
+
+        if ("reports".equals(page)) {
+            try {
+                var reportsService = new lk.icbt.oceanview.reports.service.ReportsService();
+
+                req.setAttribute("revenueReport", reportsService.getRevenueReport());
+                req.setAttribute("statusSummaryList", reportsService.getReservationStatusSummary());
+                req.setAttribute("roomTypeRevenueList", reportsService.getRoomTypeRevenueSummary());
+
+            } catch (Exception e) {
+                req.setAttribute("pageError", "Unable to load reports.");
+            }
+        }
+
         /*
         Pass page variable to dashboard layout
         so dashboard.jsp loads the correct module
