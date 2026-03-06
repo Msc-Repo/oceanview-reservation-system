@@ -99,6 +99,12 @@
     }
 
     @media print {
+        html, body {
+            background: white !important;
+            margin: 0;
+            padding: 0;
+        }
+
         body * {
             visibility: hidden;
         }
@@ -112,16 +118,18 @@
             left: 0;
             top: 0;
             width: 100%;
-            background: white;
-            box-shadow: none !important;
+            background: white !important;
             border: none !important;
-            padding: 20px;
+            box-shadow: none !important;
+            padding: 20px !important;
+            margin: 0 !important;
         }
 
         .no-print {
             display: none !important;
         }
     }
+
 </style>
 
 <div class="bill-page-wrap">
@@ -184,6 +192,7 @@
                     <div><strong>Guest Name:</strong> <%= bill.getGuestName() %></div>
                     <div><strong>Room Number:</strong> <%= bill.getRoomNumber() %></div>
                     <div><strong>Room Type:</strong> <%= bill.getRoomTypeName() %></div>
+                    <div><strong>Room Rate / Night:</strong> LKR <%= bill.getRatePerNight() %></div>
                     <div><strong>Check-in:</strong> <%= bill.getCheckIn() %></div>
                     <div><strong>Check-out:</strong> <%= bill.getCheckOut() %></div>
                     <div><strong>Nights Stayed:</strong> <%= bill.getNights() %></div>
@@ -236,12 +245,14 @@
 
                 <div style="display:flex; flex-direction:column; gap:6px;">
                     <label style="font-size:13px; color:#334155;">Payment Method</label>
-                    <select name="paymentMethod" required
-                            style="width:220px; height:44px; border-radius:12px; padding:10px; border:1px solid rgba(2,6,23,0.14);">
-                        <option value="">-- Select Payment Method --</option>
-                        <option value="CASH">Cash</option>
-                        <option value="CARD">Card</option>
-                    </select>
+                    <label>
+                        <select name="paymentMethod" required
+                                style="width:220px; height:44px; border-radius:12px; padding:10px; border:1px solid rgba(2,6,23,0.14);">
+                            <option value="">-- Select Payment Method --</option>
+                            <option value="CASH">Cash</option>
+                            <option value="CARD">Card</option>
+                        </select>
+                    </label>
                 </div>
 
                 <button type="submit" class="btn-pay">Pay Bill</button>
