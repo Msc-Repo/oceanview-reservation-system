@@ -160,4 +160,41 @@ public class ReservationDAO {
             ps.executeUpdate();
         }
     }
+
+    public int countAll() throws Exception {
+
+        String sql = "SELECT COUNT(*) FROM reservations";
+
+        Connection conn = DBConnection.getInstance().getConnection();
+
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+
+        return 0;
+    }
+
+    public int countByStatus(String status) throws Exception {
+
+        String sql = "SELECT COUNT(*) FROM reservations WHERE status = ?";
+
+        Connection conn = DBConnection.getInstance().getConnection();
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, status);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+
+        return 0;
+    }
 }

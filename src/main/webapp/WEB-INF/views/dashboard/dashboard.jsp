@@ -198,11 +198,7 @@
             <% switch (currentPage) {
 
                 case "home" -> { %>
-            <h3>Home</h3>
-            <p style="color: var(--muted);">
-                Welcome to the Ocean View Resort Reservation System.
-                Use the sidebar to manage reservations and billing.
-            </p>
+            <jsp:include page="/WEB-INF/views/dashboard/home.jsp"/>
 
             <%  } case "reservationForm" -> { %>
             <jsp:include page="/WEB-INF/views/reservation/reservation-form.jsp"/>

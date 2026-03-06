@@ -92,4 +92,29 @@ public class RoomDAO {
         }
         return list;
     }
+
+    public int countAvailableRooms() throws Exception {
+
+        String sql = """
+        SELECT COUNT(*)
+        FROM rooms r
+        WHERE r.id NOT IN (
+            SELECT room_id
+            FROM reservations
+            WHERE status = 'CONFIRMED'
+        )
+    """;
+
+        Connection conn = DBConnection.getInstance().getConnection();
+
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+
+        return 0;
+    }
 }
